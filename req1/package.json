@@ -1,0 +1,32 @@
+{
+  "name": "node-js-jwt-auth-postgresql",
+  "version": "1.0.0",
+  "description": "Node.js Demo for JWT Authentication with PostgreSQL",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "node js",
+    "express",
+    "jwt",
+    "authentication",
+    "sequelize",
+    "rest",
+    "api",
+    "postgresql"
+  ],
+  "author": "bezkoder",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "jsonwebtoken": "^8.5.1",
+    "pg": "^7.18.2",
+    "pg-hstore": "^2.3.4",
+    "multer": "^1.4.2",
+    "sequelize": "^5.22.5"
+  }
+}
