@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { getStories, getStory, getUserStories, addStory, editStory, deleteStory, getUploadUrl } from './controller'
+import { getStories, getStory, getUserStories, addStory, editStory, deleteStory, getUploadUrl, addPhoto, editPhoto } from './controller'
 import { login, refreshToken, logout, signup } from './authController'
 import { authenticate, authenticateRefresh } from './auth'
 
@@ -16,10 +16,13 @@ routes.get('/stories', getStories)
 routes.get('/stories/:id', getStory)
 routes.get('/users/:id', getUserStories)
 
-// add, edit, or delete a story
+// add, edit, or delete a story or a photo
 routes.post('/stories', authenticate, addStory)
 routes.put('/stories/:id', authenticate, editStory)
 routes.delete('/stories/:id', authenticate, deleteStory)
+routes.post('/photos', authenticate, addPhoto)
+routes.put('/photos/:id', authenticate, editPhoto)
+
 
 // s3 upload url
 routes.get('/s3upload/:filename', getUploadUrl)

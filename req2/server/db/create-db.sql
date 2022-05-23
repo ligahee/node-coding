@@ -19,5 +19,7 @@ CREATE TABLE IF NOT EXISTS photos (
     id SERIAL PRIMARY KEY,
     photo_url TEXT,
     story_id INT NOT NULL,
-    FOREIGN KEY(story_id) REFERENCES stories(id)
+    FOREIGN KEY(story_id) REFERENCES stories(id),
+    user_id INT NOT NULL,
+    FOREIGN KEY(user_id) REFERENCES users(id)
 );

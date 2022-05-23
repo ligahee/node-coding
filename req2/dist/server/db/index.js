@@ -7,7 +7,7 @@ const pool = process.env.NODE_ENV === 'development' ? new Pool({
     host: 'localhost',
     database: process.env.DB_NAME,
     password: process.env.DB_PW,
-    port: 5432,
+    port: 5432
 })
     :
         new Pool({
@@ -17,5 +17,7 @@ const pool = process.env.NODE_ENV === 'development' ? new Pool({
             password: process.env.RDS_PASSWORD,
             port: process.env.RDS_PORT
         });
+console.log(process.env.DB_PW);
+require('dotenv').config();
 exports.default = pool;
 //# sourceMappingURL=index.js.map

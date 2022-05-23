@@ -12,18 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUploadUrl = exports.deleteStory = exports.editStory = exports.addStory = exports.getUserStories = exports.getStory = exports.getStories = void 0;
+exports.getUploadUrl = exports.deleteStory = exports.editStory = exports.addPhoto = exports.addStory = exports.getUserStories = exports.getStory = exports.getStories = void 0;
 const index_1 = __importDefault(require("./db/index"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_1 = require("express");
 const s3_1 = require("./s3");
-const DEFAULT_LIMIT = 6;
+const DEFAULT_LIMIT = 4;
+//limited post images to 5
+const IMAGE_LIMIT = 5;
 const getStories = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let page = Number(req.query.page) || 1;
     let limit = Number(req.query.limit) || DEFAULT_LIMIT;
     let offset = (page - 1) * limit;
     let total = yield index_1.default.query('SELECT count(*) FROM stories');
-    let result = yield index_1.default.query('SELECT stories.*, users.email, users.avatar_color FROM stories JOIN users ON stories.user_id = users.id ORDER BY date_added DESC LIMIT $1 OFFSET $2', [limit, offset]);
+    let result = yield index_1.default.query('SELECT photos.photo_url, stories.*, users.email, users.avatar_color FROM stories JOIN photos ON stories.id = photos.story_id JOIN users ON stories.user_id = users.id ORDER BY date_added DESC LIMIT $1 OFFSET $2', [limit, offset]);
     let pages = Math.ceil(Number(total.rows[0].count) / limit);
     return res.status(200).json({
         total: { stories: total.rows[0].count, pages },
@@ -33,7 +35,7 @@ const getStories = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 });
 exports.getStories = getStories;
 const getStory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield index_1.default.query('SELECT * FROM stories WHERE id=$1', [req.params.id]);
+    const result = yield index_1.default.query('SELECT photos.photo_url, stories.* FROM stories JOIN photos ON stories.id = photos.story_id WHERE stories.id=$1', [req.params.id]);
     if (result.rowCount === 0)
         return express_1.response.sendStatus(404);
     return res.status(200).json(result.rows[0]);
@@ -62,26 +64,39 @@ const addStory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = decoded.userId;
     const title = req.body.title;
     const content = req.body.content;
-    const photo_url = req.body.photo_url;
     if (!title || !content) {
         return res.json({ error: 'title and content required' });
     }
-    const addedStory = yield index_1.default.query('INSERT INTO stories (title, content, photo_url, user_id) VALUES ($1, $2, $3, $4) RETURNING *', [title, content, photo_url, userId]);
+    const addedStory = yield index_1.default.query('INSERT INTO stories (title, content, user_id) VALUES ($1, $2, $3) RETURNING *', [title, content, userId]);
     return res.status(200).json(addedStory.rows[0]);
 });
 exports.addStory = addStory;
+const addPhoto = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield index_1.default.query('SELECT * FROM stories WHERE id=$1', [req.params.id]);
+    if (result.rowCount === 0)
+        return express_1.response.sendStatus(404);
+    const limit = yield index_1.default.query('SELECT * FROM photos WHERE story_id=$1', [req.params.id]);
+    if (limit.rowCount >= IMAGE_LIMIT)
+        return express_1.response.sendStatus(404);
+    const storyId = Number(req.params.id);
+    const photo_url = req.body.photo_url;
+    const addedPhoto = yield index_1.default.query('INSERT INTO photos (photo_url, story_id) VALUES ($1,$2) RETURNING *', [photo_url, storyId]);
+    return res.status(200).json(addedPhoto);
+});
+exports.addPhoto = addPhoto;
 const editStory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const token = req.headers.authorization;
     const decoded = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
     const userId = decoded.userId;
     const title = req.body.title;
     const content = req.body.content;
-    const photo_url = req.body.photo_url;
     const storyId = Number(req.params.id);
     if (!title || !content) {
         return res.json({ error: 'title and content required' });
     }
-    const editedStory = yield index_1.default.query('UPDATE stories SET title=$1, content=$2, photo_url=$3 WHERE id=$4 AND user_id=$5 RETURNING *', [title, content, photo_url, storyId, userId]);
+    let total = yield index_1.default.query('SELECT count(*) FROM photos WHERE story_id=$1', [req.params.id]);
+    let result = yield index_1.default.query('SELECT photos.photo_url, stories.* FROM stories JOIN photos ON stories.id = photos.story_id WHERE stories.id=$1 ORDER BY date_added DESC LIMIT $2', [req.params.id, IMAGE_LIMIT]);
+    const editedStory = yield index_1.default.query('UPDATE stories SET title=$1, content=$2 WHERE id=$3 AND user_id=$4 RETURNING *', [title, content, storyId, userId]);
     return res.status(200).json(editedStory.rows[0]);
 });
 exports.editStory = editStory;

@@ -22,7 +22,7 @@ const s3 = new s3_1.default({
 });
 const generateUploadUrl = (photoName) => __awaiter(void 0, void 0, void 0, function* () {
     const params = {
-        Bucket: 'nexttailwind',
+        Bucket: 'jiayili7413',
         Key: photoName,
     };
     const url = yield s3.getSignedUrlPromise('putObject', params);
