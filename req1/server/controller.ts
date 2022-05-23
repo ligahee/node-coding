@@ -1,7 +1,7 @@
 import pool from './db/index'
 import jwt from 'jsonwebtoken'
 import { Request, response, Response} from 'express'
-import { generateUploadUrl } from './s3'
+
 
 const DEFAULT_LIMIT: number = 6
 

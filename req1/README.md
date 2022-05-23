@@ -18,11 +18,6 @@ Login is handled by JWT authentication. Once a user logs in, they receive an acc
   - DB_NAME
   - JWT_SECRET
   - REFRESH_SECRET
-- create an s3 bucket on AWS and add the following variables to your .env file (for storing photos and saving the photo_urls in your database.)
-  - AWS_REGION
-  - AWS_BUCKETNAME
-  - AWS_ACCESSIDKEY
-  - AWS_SECRETACCESSKEY
 - Cd into the root directory and 'npm install'. 
 - Run 'npm run dev' to start the local server at localhost:4000
 
