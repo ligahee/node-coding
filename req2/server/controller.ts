@@ -39,7 +39,7 @@ export const getUserStories = async (req: Request, res: Response): Promise<Respo
   if (user.rowCount === 0) return response.sendStatus(404)
 
   let total = await pool.query('SELECT count(*) FROM stories WHERE user_id=$1', [req.params.id])
-  let result = await pool.query('SELECT stories.*, users.email, users.avatar_color FROM stories JOIN users ON stories.user_id = users.id WHERE users.id=$1 ORDER BY date_added DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset])
+  let result = await pool.query('SELECT photos.photo_url, stories.*, users.email, users.avatar_color FROM stories JOIN photos ON stories.id = photos.story_id JOIN users ON stories.user_id = users.id WHERE users.id=$1 ORDER BY date_added DESC LIMIT $2 OFFSET $3', [req.params.id, limit, offset])
 
   const pages: number = Math.ceil(Number(total.rows[0].count) / limit)
 
@@ -73,6 +73,7 @@ export const addPhoto = async (req: Request, res: Response): Promise<Response> =
   const result = await pool.query('SELECT * FROM stories WHERE id=$1', [req.params.id])
   if (result.rowCount === 0) return response.sendStatus(404)
   const limit = await pool.query('SELECT * FROM photos WHERE story_id=$1', [req.params.id])
+  //limit the photo at most 5
   if (limit.rowCount >= IMAGE_LIMIT) return response.sendStatus(404)
 
   const storyId : number = Number(req.params.id)
