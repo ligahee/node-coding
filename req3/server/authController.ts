@@ -123,7 +123,7 @@ function colorGenerator(): string {
 }
 
 
-export const postUsername = async (req: Request, res: Response): Promise<Response> => {
+export const addUsername = async (req: Request, res: Response): Promise<Response> => {
   const username: string = req.body.username
   const email: string = req.body.signupEmail
   let user = await pool.query('SELECT * FROM users WHERE LOWER(email)=$1', [email.toLowerCase()])
