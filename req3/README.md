@@ -6,7 +6,9 @@
 
 ## Authentication overview.
 
-Login is handled by JWT authentication. Once a user logs in, they receive an access token in the body of the response, and a refresh token as an HTTP Only cookie. A refresh timer is triggered on login and will silenty refresh the access token as long as a valid refresh token is present (in the form of the HTTP Only cookie) when making the refresh_token call. The access token provides access to api endpoints protected by an authentication middleware.
+Login is handled by JWT authentication. Once a user logs in, they receive an access token in the body of the response, and a refresh token as an HTTP Only cookie. A refresh timer is triggered on login and will silenty refresh the access token as long as a valid refresh token is present (in the form of the HTTP Only cookie) when making the refresh_token call. The access token provides access to api endpoints protected by an authentication middleware. 
+
+To solve the challenge, I add the comments table has two foreign keys related to stories and users, add pagination in the story and comments of the story with offset and limit clause.
 
 
 ## Installation

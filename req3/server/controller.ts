@@ -2,9 +2,9 @@ import pool from './db/index'
 import jwt from 'jsonwebtoken'
 import { Request, response, Response} from 'express'
 import { generateUploadUrl } from './s3'
-
+//add pagination in the story and comments of the story 
 const DEFAULT_LIMIT: number = 6
-//limited post images to 5
+//limit post images to 5
 const IMAGE_LIMIT: number = 5
 
 export const getStories = async (req: Request, res: Response):Promise<Response> => {
